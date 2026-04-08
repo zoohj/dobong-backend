@@ -13,9 +13,9 @@ dependencies = [
     "langchain-postgres>=0.0.17",
     "langgraph>=1.1.6",
     "langgraph-checkpoint-postgres>=3.0.5",
+    "psycopg2>=2.9.11",
     "psycopg[binary]>=3.3.3",
     "pypdf>=6.9.2",
     "python-dotenv>=1.2.2",
     "sqlalchemy>=2.0.49",
-
 ]

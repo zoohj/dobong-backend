@@ -12,7 +12,9 @@ embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
 if VECTOR_DB_URL:
     from langchain_postgres import PGVector
 
-    ASYNC_VECTOR_DB_URL = VECTOR_DB_URL.replace("postgresql://", "postgresql+asyncpg://")
+    ASYNC_VECTOR_DB_URL = VECTOR_DB_URL.replace(
+        "postgresql://", "postgresql+asyncpg://"
+    )
     vectorstore = PGVector(
         connection=ASYNC_VECTOR_DB_URL,
         embeddings=embeddings,
