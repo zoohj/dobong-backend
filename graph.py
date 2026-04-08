@@ -54,8 +54,9 @@ async def init_graph():
     from psycopg import AsyncConnection
     from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 
-    conn = await AsyncConnection.connect(DATABASE_URL, autocommit=True)
-    checkpointer = AsyncPostgresSaver(conn)
+    # conn = await AsyncConnection.connect(DATABASE_URL, autocommit=True)
+    # checkpointer = AsyncPostgresSaver(conn)
+    checkpointer = await AsyncPostgresSaver.from_conn_string(DATABASE_URL)
     await checkpointer.setup()
 
     graph = create_agent(
@@ -63,4 +64,4 @@ async def init_graph():
         tools=[retriever_tool],
         checkpointer=checkpointer,
     )
-    return conn
+    return checkpointer

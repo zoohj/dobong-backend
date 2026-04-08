@@ -23,9 +23,9 @@ import graph as graph_module
 async def lifespan(app):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    pg_conn = await graph_module.init_graph()
+    checkpointer = await graph_module.init_graph()
     yield
-    await pg_conn.close()
+    await checkpointer.conn.close()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -74,9 +74,7 @@ async def create_conversation(db: AsyncSession = Depends(get_db)):
 
 @app.delete("/conversations/{conversation_id}")
 async def delete_conversation(conversation_id: str, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(
-        select(Conversation).filter_by(id=conversation_id)
-    )
+    result = await db.execute(select(Conversation).filter_by(id=conversation_id))
     conversation = result.scalar_one_or_none()
     if conversation:
         await db.delete(conversation)
@@ -125,9 +123,7 @@ async def chat_stream(
         raise HTTPException(status_code=503, detail="서버 초기화 중입니다.")
 
     # 첫 메시지면 제목 업데이트
-    result = await db.execute(
-        select(Conversation).filter_by(id=conversation_id)
-    )
+    result = await db.execute(select(Conversation).filter_by(id=conversation_id))
     conversation = result.scalar_one_or_none()
     if conversation and conversation.title == "새 대화":
         conversation.title = req.message[:30] + ("..." if len(req.message) > 30 else "")
