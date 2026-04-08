@@ -23,9 +23,9 @@ import graph as graph_module
 async def lifespan(app):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    checkpointer = await graph_module.init_graph()
+    pg_conn = await graph_module.init_graph()
     yield
-    await checkpointer.conn.close()
+    await pg_conn.close()
 
 
 app = FastAPI(lifespan=lifespan)

@@ -20,6 +20,7 @@ if VECTOR_DB_URL:
         embeddings=embeddings,
         collection_name="ai_chatbot",
         async_mode=True,
+        create_extension=False,
     )
 else:
     from langchain_chroma import Chroma
@@ -54,9 +55,8 @@ async def init_graph():
     from psycopg import AsyncConnection
     from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 
-    # conn = await AsyncConnection.connect(DATABASE_URL, autocommit=True)
-    # checkpointer = AsyncPostgresSaver(conn)
-    checkpointer = await AsyncPostgresSaver.from_conn_string(DATABASE_URL)
+    conn = await AsyncConnection.connect(DATABASE_URL, autocommit=True)
+    checkpointer = AsyncPostgresSaver(conn)
     await checkpointer.setup()
 
     graph = create_agent(
@@ -64,4 +64,4 @@ async def init_graph():
         tools=[retriever_tool],
         checkpointer=checkpointer,
     )
-    return checkpointer
+    return conn
